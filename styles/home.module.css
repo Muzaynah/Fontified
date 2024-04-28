@@ -1,0 +1,6 @@
+.container {
+    background-image: url('/assets/gradient-main.jpg'); /* Replace 'background.jpg' with your image file name */
+    background-size: cover; /* Adjust the background size as needed */
+    background-position: center; /* Adjust the background position as needed */
+    /* Add any other background properties you need */
+  }
