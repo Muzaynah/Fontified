@@ -1,4 +1,5 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Fontified - Website for Downloading and Generating Fonts
+This project uses React, MongoDB and Typescript in the Next.js framework
 
 ## Getting Started
 
