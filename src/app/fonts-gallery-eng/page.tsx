@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from '/styles/style.module.css';
+
 import ProfileImg from '../components/profileimage';
 import Circle from '../components/Circle';
 
@@ -249,7 +249,7 @@ const Page: React.FC = () => {
                   <h1 className="text-2xl group-hover:text-black text-purpur mb-4" style={{ fontFamily: `${font.family}, sans-serif` }}>
                     {font.family}
                   </h1>
-                  <div className={styles.fontFamily}>
+                  <div>
                   <h2 className="text-3xl mb-4" style={{ fontFamily: `${font.family}, sans-serif` }}>
                     The quick brown fox jumps over a lazy dog
                   </h2>
