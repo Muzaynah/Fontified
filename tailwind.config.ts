@@ -16,6 +16,11 @@ const config: Config = {
       colors: {
         'purpur': '#7c54c7'
       },
+      fontSize: {
+        '10xl': '10rem',
+        '11xl': '11rem', // Custom font size
+        '20xl': '20rem',
+      },
     },
   },
   plugins: [],
