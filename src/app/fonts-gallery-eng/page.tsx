@@ -1,16 +1,66 @@
 'use client'
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import styles from '/styles/style.module.css';
 import ProfileImg from '../components/profileimage';
 import Circle from '../components/Circle';
 
+interface Font {
+  family: string;
+  variants: string[];
+}
+
 const Page: React.FC = () => {
+  const [fonts, setFonts] = useState<Font[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedButton, setSelectedButton] = useState("All");
   const [windowWidth, setWindowWidth] = useState<number>(1024);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('English');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [categoryFinished, setCategoryFinished] = useState(false);
 
-  const handleButtonClick = (buttonName: string) => {
+  // Function to fetch fonts from the server
+  const fetchFonts = async (page: number, category?: string) => {
+    try {
+      let url = `http://localhost:3001/api/fonts?page=${page}`; // Base URL
+
+      // Append category query parameter if category is specified
+      if (category && category !== 'All') {
+        url += `&category=${category}`;
+      }
+
+      const response = await axios.get<Font[]>(url);
+      if (response.data.length === 0) {
+        setCategoryFinished(true);
+      } else {
+        setFonts(prevFonts => [...prevFonts, ...response.data]);
+      }
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching fonts:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFonts(currentPage, selectedButton); // Fetch fonts for initial page with the selected category
+  }, [currentPage, selectedButton]);
+
+  const handleButtonClick = async (buttonName: string) => {
     setSelectedButton(buttonName);
+    setCurrentPage(1); // Reset current page when a category button is clicked
+    
+    try {
+      const response = await axios.get<Font[]>(`http://localhost:3001/api/fonts?page=1&category=${buttonName}`);
+      setFonts(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching fonts:', error);
+      setLoading(false);
+    }
+    setCategoryFinished(false);
   };
 
   const handleLanguageToggle = () => {
@@ -21,23 +71,57 @@ const Page: React.FC = () => {
     const updateWindowWidth = () => {
       setWindowWidth(window.innerWidth);
     };
-
+   
     const timeoutId = setTimeout(updateWindowWidth, 100);
-
     window.addEventListener('resize', updateWindowWidth);
-
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener('resize', updateWindowWidth);
     };
   }, []);
 
+  function handleDownload(url: string) {
+    // Create an anchor element
+    const anchor = document.createElement('a');
+    // Set the href attribute to the URL of the file
+    anchor.href = url;
+    // Set the download attribute to the filename you want the file to be saved as
+    anchor.download = 'filename.ttf';
+    // Programmatically trigger a click event on the anchor element
+    anchor.click();
+  }
+
+  useEffect(() => {
+    const cssText = fonts.map(font => (
+      `@font-face {
+         font-family: '${font.family}';
+         src: url('${font.variants[0]}') format('woff2'),
+              url('${font.variants[1]}') format('woff');
+       }`
+    )).join('\n');
+
+    const styleElement = document.createElement('style');
+    styleElement.textContent = cssText;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, [fonts]);
+
   const shouldStackButtons = windowWidth < 600;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
+  
+  const handleLoadMoreFonts = () => {
+    if (!categoryFinished) {
+      setCurrentPage(prevPage => prevPage + 1); // Increment current page to load next set of fonts
+    }
+  };
+  
+  
   return (
     <div className="bg-black text-white px-8 py-10 min-h-screen">
     {/*<Circle circleColor="#380356" radius={250} />*/}
@@ -110,52 +194,91 @@ const Page: React.FC = () => {
         <h1 className="text-4xl font-bold">Explore our Font Collection</h1>
       </div>
 
-      {selectedLanguage=='English'&&(
-
+      {selectedLanguage === 'English' && (
       <div className={`container mx-auto text-purpur ${shouldStackButtons ? 'w-40' : 'w-auto'} ${shouldStackButtons ? 'flex flex-col space-y-4 items-center pb-8' : 'flex justify-center space-x-4 pb-12'}`}>
-        <button 
-          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === "All" ? "bg-purpur text-white border-2 border-purpur" : "hover:bg-purpur hover:text-white border-2 border-purpur"} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
-          onClick={() => handleButtonClick("All")}
+        <button
+          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === 'All' ? 'bg-purpur text-white border-2 border-purpur' : 'hover:bg-purpur hover:text-white border-2 border-purpur'} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
+          onClick={() => handleButtonClick('All')}
         >
           All
         </button>
-        <button 
-          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === "Serif" ? "bg-purpur text-white border-2 border-purpur" : "hover:bg-purpur hover:text-white border-2 border-purpur"} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
-          onClick={() => handleButtonClick("Serif")}
+        <button
+          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === 'serif' ? 'bg-purpur text-white border-2 border-purpur' : 'hover:bg-purpur hover:text-white border-2 border-purpur'} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
+          onClick={() => handleButtonClick('serif')}
         >
           Serif
         </button>
-        <button 
-          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === "Sans Serif" ? "bg-purpur text-white border-2 border-purpur" : "hover:bg-purpur hover:text-white border-2 border-purpur"} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
-          onClick={() => handleButtonClick("Sans Serif")}
+        <button
+          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === 'sans-serif' ? 'bg-purpur text-white border-2 border-purpur' : 'hover:bg-purpur hover:text-white border-2 border-purpur'} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
+          onClick={() => handleButtonClick('sans-serif')}
         >
           Sans Serif
         </button>
-        <button 
-          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === "Monospaced" ? "bg-purpur text-white border-2 border-purpur" : "hover:bg-purpur hover:text-white border-2 border-purpur"} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
-          onClick={() => handleButtonClick("Monospaced")}
+        <button
+          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === 'monospace' ? 'bg-purpur text-white border-2 border-purpur' : 'hover:bg-purpur hover:text-white border-2 border-purpur'} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
+          onClick={() => handleButtonClick('monospace')}
         >
           Monospaced
         </button>
+        <button
+          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === 'display' ? 'bg-purpur text-white border-2 border-purpur' : 'hover:bg-purpur hover:text-white border-2 border-purpur'} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
+          onClick={() => handleButtonClick('display')}
+        >
+          Display
+        </button>
+        <button
+          className={`btn transition duration-200 ease-in-out btn-secondary ${selectedButton === 'handwriting' ? 'bg-purpur text-white border-2 border-purpur' : 'hover:bg-purpur hover:text-white border-2 border-purpur'} rounded-full px-6 py-3 text-lg h-12 flex items-center justify-center`}
+          onClick={() => handleButtonClick('handwriting')}
+        >
+          Handwriting
+        </button>
       </div>
-      )}
+    )
+  }
 
       {selectedLanguage=='English' && (
-      <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[...Array(12)].map((_, index) => (
-          <div key={index} className="bg-transparent border-purpur border-2 p-6 rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group">
-            <div>
-              <h1 className="text-2xl group-hover:text-black text-purpur mb-4">Font Name</h1>
-              <h2 className="text-3xl mb-4">The quick brown fox jumps over a lazy dog</h2>
-              <p className=" text-lg mb-6">By [name]</p>
-            </div>
-            <div className="flex justify-between mt-4">
-              <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full w-14 h-14 font-bold transition duration-200 ease-in-out">+</button>
-              <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out">Download</button>
-            </div>
+        <div className="container mx-auto px-4 py-10">
+        {loading ? ( // Render loading message if fonts are still loading
+          <p>Loading fonts...</p>
+        ) : (
+          <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {fonts.map((font, index) => (
+              <div key={index} className="bg-transparent border-purpur border-2 p-6 rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group">
+                <div>
+                  {/* Apply font family dynamically to the headings */}
+                  <h1 className="text-2xl group-hover:text-black text-purpur mb-4" style={{ fontFamily: `${font.family}, sans-serif` }}>
+                    {font.family}
+                  </h1>
+                  <div className={styles.fontFamily}>
+                  <h2 className="text-3xl mb-4" style={{ fontFamily: `${font.family}, sans-serif` }}>
+                    The quick brown fox jumps over a lazy dog
+                  </h2>
+                  </div>
+                 
+                </div>
+                <div className="flex justify-between mt-4">
+                  <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full w-14 h-14 font-bold transition duration-200 ease-in-out">+</button>
+                  <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out" onClick={() => handleDownload(font.variants[2])}>
+    Download
+</button>
+
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>)}
+        )}
+      </div>
+      )}
+       {!loading && (
+        <div className="flex justify-center mt-8">
+          <button 
+            className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out"
+            onClick={handleLoadMoreFonts}
+          >
+            Load More Fonts
+          </button>
+        </div>
+      )}
 
       {selectedLanguage=='اردو' && (
       <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-8">
@@ -177,3 +300,4 @@ const Page: React.FC = () => {
 };
 
 export default Page;
+

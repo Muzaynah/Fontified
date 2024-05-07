@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "mongodb": "^6.5.0",
     "mongoose": "^8.3.3",
@@ -20,7 +22,8 @@
     "react-dom": "^18",
     "react-interactive-blob": "^0.0.1",
     "react-sketch-canvas": "^6.2.0",
-    "simplify-js": "^1.2.4"
+    "simplify-js": "^1.2.4",
+    "use-client": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^20",
