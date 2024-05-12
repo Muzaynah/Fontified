@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 
-const Glyphs: React.FC = () => {
+const Glyphs: React.FC =  ({ fontUrls }) => {
     const glyphs = [
         ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)), // Alphabet (A-Z)
         ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i)), // Alphabet (a-z)
@@ -11,7 +11,7 @@ const Glyphs: React.FC = () => {
     const [hoveredGlyph, setHoveredGlyph] = useState<string>('');
 
     return (
-        <div className="container mx-auto px-6 xl:px-40 pb-0 mb-o pt-20">
+        <div style={{ fontFamily: `${fontUrls?.fontFamily}, sans-serif` }} className="container mx-auto px-6 xl:px-40 pb-0 mb-o pt-20">
             <div className="flex flex-row justify-center items-start border-2 md:border-0 mx-8">
                 <div className="overflow-hidden md:mr-8">
                     <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-8 gap-0 md:gap-2 h-full border md:border-0">

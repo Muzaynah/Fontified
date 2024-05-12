@@ -4,11 +4,12 @@ const cors = require('cors'); // Import cors package
 
 const app = express();
 
-// Enable CORS middleware
-// Enable CORS middleware with specific origins
 app.use(cors({
-    origin: 'http://localhost:3000' // Replace with your frontend URL
-  }));  
+  origin: 'http://localhost:3000' // Adjust the frontend URL
+}));
+
+// Middleware to parse JSON requests
+app.use(express.json());
 // Connect to MongoDB
 mongoose.connect("mongodb+srv://abdullahmalhi361:G7IaXyHnpgEprnj8@fonts.gts2djm.mongodb.net/?retryWrites=true&w=majority&appName=Fonts")
   .then(() => console.log('Connected to MongoDB'))
@@ -28,6 +29,26 @@ const fontSchema = new mongoose.Schema({
 });
 // Create a Font model for the 'english_fonts' collection
 const Font = mongoose.model('Font', fontSchema, 'fonts');
+const userFavoritesSchema = new mongoose.Schema({
+  email: String,
+  fontFamily: String,
+});
+
+const UserFavorites = mongoose.model('UserFavorites', userFavoritesSchema);
+
+app.post('/api/user-favorites', async (req, res) => {
+  const { email, fontFamily } = req.body;
+
+  try {
+    const favoriteFont = new UserFavorites({ email, fontFamily });
+    await favoriteFont.save();
+
+    res.status(201).json({ message: 'Font added to favorites successfully' });
+  } catch (error) {
+    console.error('Error adding font to favorites:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.get('/api/fonts', async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Get the requested page number from query params
@@ -59,6 +80,34 @@ app.get('/api/fonts', async (req, res) => {
     res.json(transformedFonts); // Send fonts as JSON response
   } catch (err) {
     console.error('Error fetching fonts:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+app.get('/api/font-family', async (req, res) => {
+  const fontFamilyName = req.query.search; // Correctly retrieve the font family name from query params
+  console.log(fontFamilyName)
+
+  try {
+    const fontFamily = await Font.findOne({ family: fontFamilyName }); // Find fontFamily in the database
+
+    if (!fontFamily) {
+      return res.status(404).json({ error: 'Font family not found' });
+    }
+
+    // Extract woff2, woff, and ttf URLs from the fontFamily data
+    const woff2Url = fontFamily.variants['400'].normal['latin'].url.woff2;
+    const woffUrl = fontFamily.variants['400'].normal['latin'].url.woff;
+    const ttfUrl = fontFamily.variants['400'].normal['latin'].url.truetype;
+
+    // Return the URLs as JSON response
+    res.json({
+      fontFamily: fontFamily.family,
+      woff2Url,
+      woffUrl,
+      ttfUrl
+    });
+  } catch (err) {
+    console.error('Error fetching font family:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
