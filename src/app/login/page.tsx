@@ -42,7 +42,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
     try {
@@ -115,7 +115,7 @@ const LoginPage: React.FC = () => {
             <p>Don't have an account?</p>
             <Link
             href = "signup"
-              className="hover:text-black hover:bg-purpur border-purpur border text-purpur py-1 px-4  rounded-full"
+              className="z-1000 hover:text-black hover:bg-purpur border-purpur border text-purpur py-1 px-4  rounded-full"
               onClick={() => console.log("Redirect to signup page")} // Placeholder for redirecting to signup page
             >
               Signup
