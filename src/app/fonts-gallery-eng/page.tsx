@@ -3,9 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSession } from "next-auth/react";
-import ProfileImg from '../components/profileimage';
-import Circle from '../components/Circle';
-import Link from 'next/link';
+import Nav from '../components/Navbar';
+
 interface Font {
   family: string;
   variants: string[];
@@ -15,12 +14,9 @@ interface Font {
 const Page: React.FC = () => {
   const { data: session } = useSession();
   const [fonts, setFonts] = useState<Font[]>([]);
-  const [userEmail, setUserEmail] = useState<string | null>(null); // State to store user's email
-
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedButton, setSelectedButton] = useState("All");
   const [windowWidth, setWindowWidth] = useState<number>(1024);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('English');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [categoryFinished, setCategoryFinished] = useState(false);
@@ -53,6 +49,8 @@ const Page: React.FC = () => {
   }, [currentPage, selectedButton]);
 
   const handleButtonClick = async (buttonName: string) => {
+
+    
     setSelectedButton(buttonName);
     setCurrentPage(1); // Reset current page when a category button is clicked
   
@@ -114,10 +112,6 @@ const Page: React.FC = () => {
   
   const shouldStackButtons = windowWidth < 600;
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   const handleLoadMoreFonts = () => {
     if (!categoryFinished) {
       setCurrentPage(prevPage => prevPage + 1); // Increment current page to load next set of fonts
@@ -169,53 +163,8 @@ const Page: React.FC = () => {
 
     <div className="bg-black text-white px-8 py-10 min-h-screen">
       {/*<Circle circleColor="#380356" radius={250} />*/}
-      <nav className="relative">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="text-xl font-bold text-white">Fontified</div>
-          {shouldStackButtons ? (
-            <button className="block lg:hidden z-20" onClick={toggleMenu}>
-              <svg className="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path fillRule="evenodd" d="M4 6h16a1 1 0 1 1 0 2H4a1 1 0 0 1 0-2zm0 5h16a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2zm0 5h16a1 1 0 1 1 0 2H4a1 1 0 0 1 0-2z" clipRule="evenodd" />
-              </svg>
-            </button>
-          ) : (
-            <ul className="flex space-x-2">
-              <li className="text-sm hover:bg-white hover:text-black px-4 py-2 rounded-full border-2">
-                <a href="#" className="nav-link">{session?.user?.name}</a>
-              </li>
-              <li className="text-sm hover:bg-white hover:text-black px-4 py-2 rounded-full border-2">
-                <a href="#" className="nav-link">Handwriting</a>
-              </li>
-              <li className="text-sm hover:bg-white hover:text-black px-4 py-2 rounded-full border-2">
-                <a href="#" className="nav-link">Editor</a>
-              </li>
-              {!shouldStackButtons && (
-                <ProfileImg />
-              )}
-            </ul>
-          )}
-        </div>
-        {isMenuOpen && (<div className="lg:hidden w-64 fixed top-0 right-0 h-full bg-black text-white transition-transform transform -translate-x-0 ease-in-out z-10">
-          <div className="relative px-10 pt-24 text-right justify-right items-right">
-            <ul className="pl-0">
-              <li className="text-md pt-4 px-2 hover:text-purpur">
-                <span className="border-b border-white block pb-4">{session?.user?.name}</span>
-              </li>
-              <li className="text-md pt-4 px-2 hover:text-purpur">
-                <span className="border-b border-white block pb-4">Handwriting</span>
-              </li>
-              <li className="text-md pt-4 px-2 hover:text-purpur">
-                <span className="border-b border-white block pb-4">Editor</span>
-              </li>
-              <li className="text-md pt-4 px-2 hover:text-purpur">
-                <span className="border-b border-white block pb-4">Profile</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        )}
-      </nav>
+      <Nav/>
+        
 
       {/*slider*/}
       <div className="container mx-auto px-4 pt-8 text-center">
@@ -330,7 +279,7 @@ const Page: React.FC = () => {
             <div key={index} className="bg-transparent border-purpur border-2 p-8 text-right rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group">
               <div>
                 <h1 className="text-3xl group-hover:text-black text-purpur mb-8">فونٹ کا نام</h1>
-                <h2 className="text-4xl mb-8">ٹھنڈ میں ایک قحط زدہ گاؤں سے گذرتے وقت ایک چڑچڑےباأثر و فارغ شخص کو بعض جل پری نما اژدہے نظر آئے۔</h2>
+                <h2 className="text-4xl mb-8">دل کے خوش رکھنے کو 'غالب' یہ خیال اچھا ہے۔</h2>
               </div>
               <div className="flex justify-between mt-4">
                 <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out">Download</button>
@@ -344,4 +293,3 @@ const Page: React.FC = () => {
 };
 
 export default Page;
-

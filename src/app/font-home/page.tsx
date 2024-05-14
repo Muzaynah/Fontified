@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import Editor from '../components/Editor';
+import Nav from '../components/Navbar';
 import Glyphs from '../components/Glyphs';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation'
@@ -119,6 +120,7 @@ const Page: React.FC = () => {
 
   return (
     <div id="top" className=" bg-black text-white min-h-screen pb-60" >
+      <Nav/>
       <div className="sticky top-0 z-50 mx-8 px-12 py-8 flex justify-center gap-2 items-center">
         <a href="#editor" className="text-sm bg-black hover:bg-white hover:text-black text-purpur hover:border-white border-purpur px-4 py-2 rounded-full border-2">
           Tester

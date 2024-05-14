@@ -1,108 +1,179 @@
-import Image from "next/image";
+'use client'
 import Link from 'next/link';
-import styles from "/styles/home.module.css";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Circle from './components/Circle';
+import AuthenticationPopup from './components/AuthenticationPopup';
+
 
 export default function Home() {
-  return (
-    <div className={styles.container}>
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
 
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          your favorite font place
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [blurIntensity, setBlurIntensity] = useState(15);
+  const [loaded, setLoaded] = useState(false);
+  const [hideScrollbar, setHideScrollbar] = useState(true); // State to control scrollbar visibility
+
+  useEffect(() => {
+    // When component mounts, set hideScrollbar to false after a delay
+    const timeout = setTimeout(() => {
+      setHideScrollbar(false);
+    }, 5000); // Adjust delay as needed
+    return () => clearTimeout(timeout); // Cleanup on unmount
+  }, []);
+
+  useEffect(() => {
+    // Gradually decrease blur intensity to 0 over 3 seconds
+    const interval = setInterval(() => {
+      if (blurIntensity > 0) {
+        setBlurIntensity(blurIntensity - 1);
+      } else {
+        clearInterval(interval);
+        setImageLoaded(true);
+      }
+    }, 80);
+
+    // Clear interval on component unmount
+    return () => clearInterval(interval);
+  }, [blurIntensity]);
+
+
+  useEffect(() => {
+    // Set loaded to true after a short delay to allow the button to animate on load
+    const timeout = setTimeout(() => {
+      setLoaded(true);
+    }, 50);
+
+    // Clean up the timeout to avoid memory leaks
+    return () => clearTimeout(timeout);
+  }, []);
+
+  
+  return (
+
+
+
+      
+    <main className={`flex min-h-screen flex-col items-center justify-between p-14 ${hideScrollbar ? 'overflow-y-hidden' : ''}`}>
+    <Circle circleColor="#380356" radius={250} />
+    <AuthenticationPopup/>
+    <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="relative h-full">
+          <div className="absolute -top-3/4 left-1/2 transform -translate-x-1/2 bg-gradient-to-b from-transparent to-fuchsia-300 w-full opacity-50% h-full rounded-full blur-[250px]"></div>
+        </div>
+      </div>
+      <div className="z-10 w-full max-w-5xl items-center justify-center font-mono text-xs lg:flex">
+        
+        <p className="fixed lg:hidden left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
+        <Image src="/assets/fontified.png" alt="Logo" width={200} height={100} />
         </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
+        <div className="fixed lg:hidden bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
           <Link
             href="fonts"
             className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
             target="_blank"
             rel="noopener noreferrer"
           >
-            by me and my frens
+            © 2024 Fontified | All Rights Reserved
           </Link>
         </div>
+        
       </div>
-      <div className="relative z-1 flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        FONTIFIED
+      <div>
+        <div className="relative lg:mt-28 z-1 hidden lg:block flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
+        <div className="relative">
+              <div className="transition-all" style={{ filter: `blur(${blurIntensity}px)` }}>
+                <Image src="/assets/fontified.png" alt="Logo" width={950} height={100} onLoad={() => setImageLoaded(true)} />
+              </div>
+            </div>
+        </div>
+        <div className={`flex mt-24 mb-12 lg:mb-10 lg:mt-2 justify-center flex-col lg:flex-row gap-4 transform-gpu ${
+          loaded ? 'opacity-100' : 'opacity-0'
+          } transition-all duration-300 ease-in-out`}
+          style={{ transitionDuration: '1s',
+          transitionDelay: '2s',
+          }}
+        >
+            <Link
+            href="loginpage"
+            target="_blank"
+            >
+              <button className="text-lg hover:text-black hover:bg-white hover:border-white border-2 w-28 py-1 border-opacity-30 border-purpur rounded-md">
+                <p className="">Login</p>
+              </button>
+            </Link>
+            <Link
+            href="register"
+            target="_blank"
+            >
+              <button className="text-lg hover:text-black hover:bg-white hover:border-white border-2 w-28 py-1 border-opacity-30 border-purpur rounded-md">
+                <p className="">Sign Up</p>
+              </button>
+            </Link>
+        </div>
       </div>
-      {/*
-      <div className="relative z-1 flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 bg-purple-500 text-white p-4 rounded-full">
-        FONTIFIED
-      </div>
-      */}
+      
 
-
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+      <div className={`mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl gap-4 lg:grid-cols-3 lg:text-left
+      transform-gpu ${
+        loaded ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        } transition-all duration-200 ease-in-out`}
+        style={{ transitionDuration: '2s', 
+        transitionDelay: '1s'
+        }}
+        
+      >
+        <Link
+          href="fonts-gallery-eng"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Fonts Gallery{" "}
+            Fonts Library{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
           </h2>
           <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            download fonts here
+            Explore our vast collection of english and urdu fonts. 
           </p>
-        </a>
+        </Link>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+        <Link
+          href=""
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Handwriting Generator{" "}
+            Handwriting Font{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
           </h2>
           <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            turn your slay handwriting into a slay font
+            Turn your handwriting into a font 
           </p>
-        </a>
+        </Link>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+        <Link
+          href=""
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Preview Mode{" "}
+            Document Editor{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
           </h2>
           <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Experiment hehe
+            Use your handwriting to type 
           </p>
-        </a>
+        </Link>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Contact{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Contact us coz we're cool
-          </p>
-        </a>
       </div>
     </main>
-    </div>
   );
 }

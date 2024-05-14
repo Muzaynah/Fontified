@@ -1,6 +1,8 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
 
+
+
 const ResetIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg height="21" viewBox="0 0 21 21" width="21" xmlns="http://www.w3.org/2000/svg">
         <g fill="none" fillRule="evenodd" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" transform="translate(2 2)">
@@ -138,7 +140,7 @@ const Editor = () => {
             <div className="max-w-full mx-auto pb-4">
                 <div className="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
                     <div className="mb-2 sm:mb-0 sm:flex items-center">
-                        <label htmlFor="font-size" className="text-sm mr-1">Size</label>
+                        <label htmlFor="font-size" className="font-sans text-xs lg:text-md sm:mx-2">Size</label>
                         <input
                             type="range"
                             id="font-size"
@@ -147,11 +149,11 @@ const Editor = () => {
                             min="10"
                             max="200"
                             step="1"
-                            className="w-full sm:w-30 lg:w-40 h-1 bg-white accent-purpur rounded-full outline-none"
+                            className="w-full sm:w-30 lg:w-40 h-1  bg-white accent-purpur rounded-full outline-none"
                         />
                     </div>
                     <div className="mb-2 sm:mb-0 sm:flex items-center">
-                        <label htmlFor="letter-spacing" className="text-sm mr-1">Spacing</label>
+                        <label htmlFor="letter-spacing" className="font-sans text-xs lg:text-md sm:mx-2">Spacing</label>
                         <input
                             type="range"
                             id="letter-spacing"
@@ -164,7 +166,7 @@ const Editor = () => {
                         />
                     </div>
                     <div className="mb-2 sm:mb-0 sm:flex items-center">
-                        <label htmlFor="filler-text-amount" className="text-sm mr-1">Text</label>
+                        <label htmlFor="filler-text-amount" className="font-sans text-xs lg:text-md sm:mx-2">Text</label>
                         <input
                             type="range"
                             id="filler-text-amount"
@@ -182,7 +184,7 @@ const Editor = () => {
                     <div className="sm:flex sm:justify-center items-center">
                         <div className="sm:w-auto mb-4 sm:mb-0 sm:mr-8">
                             <select
-                                className="px-1 py-2 w-full sm:w-auto bg-black border border-white rounded-md focus:outline-none focus:ring-purpur focus:border-purpur"
+                                className="px-1 py-2 w-full sm:w-auto bg-black border border-white rounded-md focus:outline-none font-sans focus:ring-purpur focus:border-purpur"
                             >
                                 <option value="" disabled selected>Select Font Style</option>
                                 <option value="Arial">Style 1</option>
