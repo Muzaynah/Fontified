@@ -58,10 +58,11 @@ const fetchFonts = async (page: number, category?: string) => {
 };
 
 // Update the useEffect hook to fetch fonts based on searchQuery changes
+// Update the useEffect hook to fetch fonts based on searchQuery changes
 useEffect(() => {
-  // If searchQuery is empty, fetch fonts normally
+  // If searchQuery is empty, do not fetch fonts
   if (!searchQuery) {
-    fetchFonts(currentPage, selectedButton);
+    setFilteredFonts([]); // Clear the filtered fonts
   } else {
     // If searchQuery is not empty, fetch fonts using the font-family API endpoint
     const fetchFilteredFonts = async () => {
@@ -77,8 +78,7 @@ useEffect(() => {
 
     fetchFilteredFonts();
   }
-}, [currentPage, selectedButton, searchQuery]);
-
+}, [searchQuery]);
 
   useEffect(() => {
     fetchFonts(currentPage, selectedButton); // Fetch fonts for initial page with the selected category
