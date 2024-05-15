@@ -10,20 +10,24 @@ interface Font {
   family: string;
   variants: string[];
 }
-
+interface ArabicFont {
+  family: string;
+  variants: string[];
+}
 
 const Page: React.FC = () => {
   const { data: session } = useSession();
   const [fonts, setFonts] = useState<Font[]>([]);
+  const [fontsArabic, setFontsArabic] = useState<ArabicFont[]>([]); // State for Arabic fonts
   const [userEmail, setUserEmail] = useState<string | null>(null); // State to store user's email
-
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedButton, setSelectedButton] = useState("All");
   const [windowWidth, setWindowWidth] = useState<number>(1024);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('English');
+  const [selectedLanguage, setSelectedLanguage] = useState<'English' | 'Arabic'>('English'); // Set default language to English
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [categoryFinished, setCategoryFinished] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredFonts, setFilteredFonts] = useState<Font[]>([]);
 
@@ -57,8 +61,6 @@ const fetchFonts = async (page: number, category?: string) => {
   }
 };
 
-// Update the useEffect hook to fetch fonts based on searchQuery changes
-// Update the useEffect hook to fetch fonts based on searchQuery changes
 useEffect(() => {
   // If searchQuery is empty, do not fetch fonts
   if (!searchQuery) {
@@ -80,25 +82,33 @@ useEffect(() => {
   }
 }, [searchQuery]);
 
-  useEffect(() => {
-    fetchFonts(currentPage, selectedButton); // Fetch fonts for initial page with the selected category
-  }, [currentPage, selectedButton]);
+useEffect(() => {
+  if (selectedLanguage === 'English') {
+    fetchFonts(currentPage, selectedButton); // Fetch English fonts
+  } else {
+    setLoading(true); // Set loading to true before fetching Arabic fonts
+    fetchArabicFonts(currentPage, selectedButton); // Fetch Arabic fonts
+  }
+}, [currentPage, selectedButton, selectedLanguage]);
 
-  const handleButtonClick = async (buttonName: string) => {
-    setSelectedButton(buttonName);
-    setCurrentPage(1); // Reset current page when a category button is clicked
-  
-    try {
-      await fetchFonts(1, buttonName); // Fetch fonts for page 1 with selected category
-    } catch (error) {
-      console.error('Error fetching fonts:', error);
+const handleButtonClick = async (buttonName: string) => {
+  setSelectedButton(buttonName);
+  setCurrentPage(1); // Reset current page when a category button is clicked
+  try {
+    if (selectedLanguage === 'English') {
+      await fetchFonts(1, buttonName); // Fetch English fonts for page 1 with selected category
+    } else {
+      await fetchArabicFonts(1, buttonName); // Fetch Arabic fonts for page 1 with selected category
     }
-    setCategoryFinished(false);
-  };
-  
-  const handleLanguageToggle = () => {
-    setSelectedLanguage(selectedLanguage === 'English' ? 'اردو' : 'English');
-  };
+  } catch (error) {
+    console.error('Error fetching fonts:', error);
+  }
+  setCategoryFinished(false);
+};
+
+const handleLanguageToggle = () => {
+  setSelectedLanguage(selectedLanguage === 'English' ? 'Arabic' : 'English');
+};
 
   useEffect(() => {
     const updateWindowWidth = () => {
@@ -144,6 +154,25 @@ useEffect(() => {
     };
   }, [fonts]);
   
+  useEffect(() => {
+    const cssText = fontsArabic.map(fontsArabic => (
+      `@font-face {
+         font-family: '${fontsArabic.family}';
+         src: url('${fontsArabic.variants[0]}') format('woff2'),
+              url('${fontsArabic.variants[1]}') format('woff');
+       }`
+    )).join('\n');
+  
+    
+    const styleElement = document.createElement('style');
+    styleElement.textContent = cssText;
+    document.head.appendChild(styleElement);
+  
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, [fontsArabic]);
+
   const shouldStackButtons = windowWidth < 600;
 
   const toggleMenu = () => {
@@ -196,6 +225,27 @@ useEffect(() => {
     }
 };
 
+const fetchArabicFonts = async (page: number, category?: string) => {
+  try {
+    let url = `http://localhost:3001/api/arabic-fonts?page=${page}`;
+
+    if (category && category !== 'All') {
+      url += `&category=${category}`;
+    }
+
+    const response = await axios.get<ArabicFont[]>(url);
+
+    if (page === 1) {
+      setFontsArabic(response.data); // Replace Arabic fonts if page is 1
+    } else {
+      setFontsArabic(prevFonts => [...prevFonts, ...response.data]); // Append Arabic fonts otherwise
+    }
+  } catch (error) {
+    console.error('Error fetching Arabic fonts:', error);
+  } finally {
+    setLoading(false); // Set loading to false after fetching fonts
+  }
+};
 
   return (
 
@@ -354,9 +404,25 @@ useEffect(() => {
     )}
   </div>
 )}
+     
+{selectedLanguage === 'Arabic' && (
+  <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-8">
+    {fontsArabic.map((font, index) => (
+      <div key={index} className="bg-transparent border-purpur border-2 p-8 text-right rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group">
+        <div>
+          <h1 className="text-3xl group-hover:text-black text-purpur mb-8" style={{ fontFamily: `${font.family}, sans-serif` }}>{font.family}</h1>
+          <h2 className="text-4xl mb-8" style={{ fontFamily: `${font.family}, sans-serif` }}>ٹھنڈ میں ایک قحط زدہ گاؤں سے گذرتے وقت ایک چڑچڑےباأثر و فارغ شخص کو بعض جل پری نما اژدہے نظر آئے۔</h2>
+        </div>
+        <div className="flex justify-between mt-4">
+          <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out">Download</button>
+          <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full w-14 h-14 font-bold transition duration-200 ease-in-out">+</button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
-
-      {!loading && (
+{!loading && (
         <div className="flex justify-center mt-8">
           <button
             className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out"
@@ -367,21 +433,6 @@ useEffect(() => {
         </div>
       )}
 
-      {selectedLanguage == 'اردو' && (
-        <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-8">
-          {[...Array(12)].map((_, index) => (
-            <div key={index} className="bg-transparent border-purpur border-2 p-8 text-right rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group">
-              <div>
-                <h1 className="text-3xl group-hover:text-black text-purpur mb-8">فونٹ کا نام</h1>
-                <h2 className="text-4xl mb-8">ٹھنڈ میں ایک قحط زدہ گاؤں سے گذرتے وقت ایک چڑچڑےباأثر و فارغ شخص کو بعض جل پری نما اژدہے نظر آئے۔</h2>
-              </div>
-              <div className="flex justify-between mt-4">
-                <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out">Download</button>
-                <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full w-14 h-14 font-bold transition duration-200 ease-in-out">+</button>
-              </div>
-            </div>
-          ))}
-        </div>)}
     </div>
   );
 };
