@@ -1,31 +1,40 @@
 // Nav.tsx
-'use client'
-import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import ProfileImg from '../components/profileimage';
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface NavProps {}
 
 const Nav: React.FC<NavProps> = ({}) => {
-  
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-  const shouldStackButtons = windowWidth < 700;
+  const [windowWidth, setWindowWidth] = useState<number>(
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
+    if (typeof window !== "undefined") {
+      setWindowWidth(window.innerWidth);
+      window.addEventListener("resize", handleResize);
+    }
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("resize", handleResize);
+      }
     };
   }, []);
+
+  const shouldStackButtons = windowWidth < 700;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -34,14 +43,14 @@ const Nav: React.FC<NavProps> = ({}) => {
   return (
     <nav className="relative">
       <div className="container mx-auto px-10 pt-8 flex justify-between items-center">
-        <Link
-        href="/"
-        target="_blank"
-        >
-          <div className="text-xl font-bold">
-              <Image src="/assets/fontified.png" alt="Logo" width={200} height={50} />
-          </div>
-        </Link>
+        <div className="text-xl font-bold">
+          <Image
+            src="/assets/fontified.png"
+            alt="Logo"
+            width={200}
+            height={50}
+          />
+        </div>
         {shouldStackButtons ? (
           <button className="block lg:hidden z-20" onClick={toggleMenu}>
             <svg
@@ -57,29 +66,51 @@ const Nav: React.FC<NavProps> = ({}) => {
             </svg>
           </button>
         ) : (
-          
           <ul className="flex space-x-2">
-            <li className="text-sm hover:bg-white hover:text-black px-4 py-2 rounded-full border-2">
-              <a href="#" className="nav-link">
-              {session?.user?.name}
-              </a>
+            <li
+              className={`text-sm px-4 py-2 rounded-full border-2 ${
+                pathname === "/"
+                  ? "bg-black text-white"
+                  : "hover:bg-white hover:text-black"
+              }`}
+            >
+              <Link href="/">Home</Link>
             </li>
-            <li className="text-sm hover:bg-white hover:text-black px-4 py-2 rounded-full border-2">
-              <a href="#" className="nav-link">
-                Browse Fonts
-              </a>
+
+            <li
+              className={`text-sm px-4 py-2 rounded-full border-2 ${
+                pathname === "/fonts-gallery-eng" ? "bg-white text-black" : " "
+              }`}
+            >
+              <Link href="/fonts-gallery-eng">Browse Fonts</Link>
             </li>
-            <li className="text-sm hover:bg-white hover:text-black px-4 py-2 rounded-full border-2">
-              <a href="#" className="nav-link">
-                Handwriting
-              </a>
+            <li
+              className={`text-sm px-4 py-2 rounded-full border-2 ${
+                pathname === "/handwriting"
+                  ? "bg-black text-white"
+                  : "hover:bg-white hover:text-black"
+              }`}
+            >
+              <Link href="/handwriting">Handwriting</Link>
             </li>
-            <li className="text-sm hover:bg-white hover:text-black px-4 py-2 rounded-full border-2">
-              <a href="#" className="nav-link">
-                Editor
-              </a>
+            <li
+              className={`text-sm px-4 py-2 rounded-full border-2 ${
+                pathname === "/editor"
+                  ? "bg-black text-white"
+                  : "hover:bg-white hover:text-black"
+              }`}
+            >
+              <Link href="/editor">Editor</Link>
             </li>
-            {!shouldStackButtons && <ProfileImg />}
+            <li
+              className={`text-sm px-4 py-2 rounded-full border-2 ${
+                pathname === "/"
+                  ? "bg-black text-white"
+                  : "hover:bg-white hover:text-black"
+              }`}
+            >
+              <Link href="/">{session?.user?.name}</Link>
+            </li>
           </ul>
         )}
       </div>
@@ -88,16 +119,48 @@ const Nav: React.FC<NavProps> = ({}) => {
           <div className="relative px-10 mt-24 text-right justify-right items-right">
             <ul className="pl-0">
               <li className="text-md pt-4 px-2 hover:text-purpur">
-                <span className="border-b border-white block pb-4">Browse Fonts</span>
+                <Link href="/fonts-gallery-eng">
+                  <span
+                    className={`border-b border-white block pb-4 ${
+                      pathname === "/fonts-gallery-eng" ? "text-purpur" : ""
+                    }`}
+                  >
+                    Browse Fonts
+                  </span>
+                </Link>
               </li>
               <li className="text-md pt-4 px-2 hover:text-purpur">
-                <span className="border-b border-white block pb-4">Handwriting</span>
+                <Link href="/handwriting">
+                  <span
+                    className={`border-b border-white block pb-4 ${
+                      pathname === "/handwriting" ? "text-purpur" : ""
+                    }`}
+                  >
+                    Handwriting
+                  </span>
+                </Link>
               </li>
               <li className="text-md pt-4 px-2 hover:text-purpur">
-                <span className="border-b border-white block pb-4">Editor</span>
+                <Link href="/editor">
+                  <span
+                    className={`border-b border-white block pb-4 ${
+                      pathname === "/editor" ? "text-purpur" : ""
+                    }`}
+                  >
+                    Editor
+                  </span>
+                </Link>
               </li>
               <li className="text-md pt-4 px-2 hover:text-purpur">
-                <span className="border-b border-white block pb-4">Profile</span>
+                <Link href="/profile">
+                  <span
+                    className={`border-b border-white block pb-4 ${
+                      pathname === "/profile" ? "text-purpur" : ""
+                    }`}
+                  >
+                    Profile
+                  </span>
+                </Link>
               </li>
             </ul>
           </div>

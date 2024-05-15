@@ -33,12 +33,11 @@ const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
 const Page: React.FC = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,7 +48,7 @@ const Page: React.FC = () => {
     }
 
     // Check if "@" is present in the email
-    if (!email.includes('@') || !email.includes('.com')) {
+    if (!email.includes("@") || !email.includes(".com")) {
       setError("Invalid email format.");
       return;
     }
@@ -61,7 +60,7 @@ const Page: React.FC = () => {
     }
 
     // Check for spaces in the name
-    if (name.split(' ').length !== 2) {
+    if (name.split(" ").length !== 2) {
       setError("Full name must contain first and last name.");
       return;
     }
@@ -89,7 +88,10 @@ const Page: React.FC = () => {
             </div>
 
             <div className="w-full">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3 flex justify-between items-center text-purpur rounded-md px-5">
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-3 flex justify-between items-center text-purpur rounded-md px-5"
+              >
                 <input
                   className="text-purpur w-full bg-transparent border rounded-full px-4 py-1"
                   type="text"
@@ -114,18 +116,17 @@ const Page: React.FC = () => {
                 >
                   Signup
                 </button>
-                {error && (
-                  <div className="text-white mt-2">{error}</div>
-                )}
+                {error && <div className="text-white mt-2">{error}</div>}
               </form>
-
             </div>
-
           </div>
           <div className="flex text-xs sm:text-sm items-center mt-6 flex-col gap-2">
             <p>Already have an account?</p>
-            <Link href="login"
-              className="hover:text-black hover:bg-purpur border-purpur border text-purpur py-1 px-4  rounded-full">Login
+            <Link
+              href="login"
+              className="hover:text-black hover:bg-purpur border-purpur border text-purpur py-1 px-4  rounded-full"
+            >
+              Login
             </Link>
           </div>
         </div>
