@@ -4,9 +4,34 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import ProfileImg from "../components/profileimage";
+import AuthenticationPopup from "../components/AuthenticationPopup";
 import Circle from "../components/Circle";
 import Link from "next/link";
 import Nav from "../components/Navbar";
+
+const filledSVG = (
+  <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+    <path fill="none" d="M0 0h256v256H0z"></path>
+    <path
+      d="M176 32a60 60 0 0 0-48 24A60 60 0 0 0 20 92c0 71.9 99.9 128.6 104.1 131a7.8 7.8 0 0 0 3.9 1 7.6 7.6 0 0 0 3.9-1 314.3 314.3 0 0 0 51.5-37.6C218.3 154 236 122.6 236 92a60 60 0 0 0-60-60Z"
+      fill="#7c54c7"
+    ></path>
+  </svg>
+);
+
+const unfilledSVG = (
+  <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+    <path fill="none" d="M0 0h256v256H0z"></path>
+    <path
+      d="M128 216S28 160 28 92a52 52 0 0 1 100-20h0a52 52 0 0 1 100 20c0 68-100 124-100 124Z"
+      fill="none"
+      stroke="#ffffff"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="16"
+    ></path>
+  </svg>
+);
 
 interface Font {
   family: string;
@@ -20,6 +45,7 @@ interface ArabicFont {
 const Page: React.FC = () => {
   const { data: session } = useSession();
   const [fonts, setFonts] = useState<Font[]>([]);
+  const [showAuthenticationPopup, setShowAuthenticationPopup] = useState(false);
   const [fontsArabic, setFontsArabic] = useState<ArabicFont[]>([]); // State for Arabic fonts
   const [userEmail, setUserEmail] = useState<string | null>(null); // State to store user's email
   const [loading, setLoading] = useState<boolean>(true);
@@ -195,8 +221,8 @@ const Page: React.FC = () => {
   const handleAddToFavorites = async (fontFamily: string) => {
     if (!session || !session.user) {
       // If user is not logged in, notify them to sign in
-      alert("Please sign in to add fonts to favorites.");
-      return;
+      setShowAuthenticationPopup(true);
+      return; // Return without setting showPopup to true
     }
 
     try {
@@ -225,7 +251,6 @@ const Page: React.FC = () => {
       );
     }
   };
-
   const handleCardClick = async (font: Font) => {
     try {
       const { family, variants } = font;
@@ -264,6 +289,7 @@ const Page: React.FC = () => {
     <div className="bg-black text-white px-8 py-10 min-h-screen">
       {/*<Circle circleColor="#380356" radius={250} />*/}
       <Nav />
+      {showAuthenticationPopup && <AuthenticationPopup />}
 
       {/*slider*/}
       <div className="container mx-auto px-4 pt-8 text-center">
