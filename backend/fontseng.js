@@ -210,7 +210,25 @@ app.get('/api/search-fonts', async (req, res) => {
   }
 });
 
+app.get('/api/search-fonts', async (req, res) => {
+  const { search } = req.query; // Retrieve the search query parameter
 
+  try {
+    const fonts = await Font.find({ family: { $regex: new RegExp(search, 'i') } }); // Search for fonts using regex for case-insensitive search
+
+    // Extract font data as needed
+    const fontData = fonts.map(font => ({
+      family: font.family,
+      variants: font.variants, // Modify this based on your font structure
+    }));
+
+    // Send the extracted font data as JSON response
+    res.json(fontData);
+  } catch (error) {
+    console.error('Error fetching filtered fonts:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 3001;

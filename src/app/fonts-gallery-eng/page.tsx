@@ -43,9 +43,6 @@ const Page: React.FC = () => {
   const [categoryFinished, setCategoryFinished] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredFonts, setFilteredFonts] = useState<Font[]>([]);
-  const [isFavorite, setIsFavorite] = useState<boolean>(false); // Define isFavorite state variable
-  const [fontUrls, setFontUrls] = useState<any>(null); // Define fontUrls state variable
-  const [favorites, setFavorites] = useState<string[]>([]);
   const [favoriteFonts, setFavoriteFonts] = useState<{ [key: string]: boolean }>({});
 
 
@@ -78,38 +75,36 @@ const Page: React.FC = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    // If searchQuery is empty, do not fetch fonts
+  const fetchFilteredFonts = useCallback(async () => {
     if (!searchQuery) {
       setFilteredFonts([]); // Clear the filtered fonts
-    } else {
-      // If searchQuery is not empty, fetch fonts using the font-family API endpoint
-      const fetchFilteredFonts = async () => {
-        try {
-          const response = await axios.get<Font[]>(
-            `http://localhost:3001/api/search-fonts?search=${searchQuery}`
-          );
-          setFilteredFonts(response.data);
-          setLoading(false);
-        } catch (error) {
-          console.error("Error fetching filtered fonts:", error);
-          setLoading(false);
-        }
-      };
+      return;
+    }
 
-      fetchFilteredFonts();
+    try {
+      const response = await axios.get<Font[]>(`http://localhost:3001/api/search-fonts?search=${searchQuery}`);
+      setFilteredFonts(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching filtered fonts:", error);
+      setLoading(false);
     }
   }, [searchQuery]);
 
   useEffect(() => {
-    if (selectedLanguage === "English") {
-      fetchFonts(currentPage, selectedButton); // Fetch English fonts
-    } else {
-      setLoading(true); // Set loading to true before fetching Arabic fonts
-      fetchArabicFonts(currentPage, selectedButton); // Fetch Arabic fonts
+    fetchFilteredFonts();
+  }, [searchQuery, fetchFilteredFonts]);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      if (selectedLanguage === "English") {
+        fetchFonts(currentPage, selectedButton); // Fetch English fonts
+      } else {
+        setLoading(true); // Set loading to true before fetching Arabic fonts
+        fetchArabicFonts(currentPage, selectedButton); // Fetch Arabic fonts
+      }
     }
-  }, [currentPage, selectedButton, selectedLanguage]);
+  }, [currentPage, selectedButton, selectedLanguage, searchQuery]);
 
   const handleButtonClick = async (buttonName: string) => {
     setSelectedButton(buttonName);
@@ -246,61 +241,55 @@ const Page: React.FC = () => {
   const fetchUserFavorites = useCallback(async () => {
     try {
       if (session && session.user) {
-        const response = await axios.get<string[]>(`http://localhost:3001/api/user-favorites/${session.user.email}`);
-        setFavorites(response.data);
+        const response = await axios.get(`http://localhost:3001/api/user-favorites/${session.user.email}`);
+        const favoritesArray = response.data.favorites || [];
+        const favoritesObject = favoritesArray.reduce((acc: { [x: string]: boolean; }, fontFamily: string | number) => {
+          acc[fontFamily] = true;
+          return acc;
+        }, {});
+        setFavoriteFonts(favoritesObject);
       }
     } catch (error) {
       console.error("Error fetching user favorites:", error);
-      // Ensure favorites is set to an empty array in case of error
-      setFavorites([]);
+      setFavoriteFonts({});
+    } finally {
+      setLoading(false);
     }
   }, [session]);
+
  
   const toggleFavorite = async (fontFamily: string) => {
     if (!session || !session.user) {
       alert("Please sign in to add fonts to favorites.");
       return;
     }
-  
+
     try {
       const userEmail = session.user.email;
-  
+
       const response = favoriteFonts[fontFamily]
-        ? await axios.delete(
-            `http://localhost:3001/api/user-favorites/${userEmail}/${fontFamily}`
-          )
+        ? await axios.delete(`http://localhost:3001/api/user-favorites/${userEmail}/${fontFamily}`)
         : await axios.post("http://localhost:3001/api/user-favorites", {
             email: userEmail,
-            fontFamily: fontFamily,
+            fontFamily,
           });
-  
-      if (favoriteFonts[fontFamily]) {
-        console.log("Font removed from favorites:", response.data);
-        
-      } else {
-        console.log("Font added to favorites:", response.data);
 
-      }
-  
       setFavoriteFonts((prevFavoriteFonts) => ({
         ...prevFavoriteFonts,
         [fontFamily]: !prevFavoriteFonts[fontFamily],
       }));
+
+      console.log(`Font ${favoriteFonts[fontFamily] ? 'removed from' : 'added to'} favorites:`, response.data);
     } catch (error) {
       console.error("Error:", error);
-      alert(
-        "An error occurred while updating favorites. Please try again later."
-      );
+      alert("An error occurred while updating favorites. Please try again later.");
     }
-  };
-  
-  
+  }; 
   useEffect(() => {
     fetchUserFavorites();
   }, [fetchUserFavorites]);
-   
-  const heartIcon = (fontFamily: string) =>
-    favoriteFonts[fontFamily] ? filledSVG : unfilledSVG;
+
+  const heartIcon = (fontFamily: string) => (favoriteFonts[fontFamily] ? filledSVG : unfilledSVG);
   
 
   return (
@@ -341,13 +330,13 @@ const Page: React.FC = () => {
 
       {/* i added fn */}
       <div className="container mx-auto px-4 pt-8 text-center">
-        <input
-          type="text"
-          placeholder="Search fonts..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-white border-2 border-purpur px-4 py-2 rounded-md w-64 mb-4"
-        />
+      <input
+              type="text"
+              placeholder="Search fonts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full py-2 px-4 bg-gray-800 text-white rounded-md"
+            />
       </div>
       {/* i added fn */}
 
@@ -433,54 +422,44 @@ const Page: React.FC = () => {
       )}
 
 {selectedLanguage === "English" && (
-  <div className="container mx-auto px-4 py-10">
-    {loading ? (
-      <p>Loading fonts...</p>
-    ) : (
-      <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {(searchQuery && filteredFonts.length > 0
-          ? filteredFonts
-          : fonts
-        ).map((font, index) => (
-          <div
-            key={index}
-            className="bg-transparent border-purpur border-2 p-6 rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group"
-          >
-            <div onClick={() => handleCardClick(font)}>
-              <h1
-                className="text-2xl group-hover:text-black text-purpur mb-4"
-                style={{ fontFamily: `${font.family}, sans-serif` }}
-              >
-                {font.family}
-              </h1>
-              <div>
-                <h2
-                  className="text-3xl mb-4"
-                  style={{ fontFamily: `${font.family}, sans-serif` }}
-                >
-                  The quick brown fox jumps over a lazy dog
-                </h2>
-              </div>
-            </div>
-            <div className="flex justify-between mt-4">
-            <span onClick={() => toggleFavorite(font.family)}>
-  <button className="text-xl hover:text-purpur w-12 h-12 rounded-full mr-4 border-white text-white">
-    {heartIcon(font.family)}
-  </button>
-</span>
-
-              <button
-                className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out"
-                onClick={() => handleDownload(font.variants[2])}
-              >
-                Download
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
+   <div className="container mx-auto px-4 py-10">
+   {loading ? (
+     <p>Loading fonts...</p>
+   ) : (
+     <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
+       {(searchQuery && filteredFonts.length > 0 ? filteredFonts : fonts).map((font, index) => (
+         <div
+           key={index}
+           className="bg-transparent border-purpur border-2 p-6 rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group"
+         >
+           <div onClick={() => handleCardClick(font)}>
+             <h1 className="text-2xl group-hover:text-black text-purpur mb-4" style={{ fontFamily: `${font.family}, sans-serif` }}>
+               {font.family}
+             </h1>
+             <div>
+               <h2 className="text-3xl mb-4" style={{ fontFamily: `${font.family}, sans-serif` }}>
+                 The quick brown fox jumps over a lazy dog
+               </h2>
+             </div>
+           </div>
+           <div className="flex justify-between mt-4">
+             <span onClick={() => toggleFavorite(font.family)}>
+               <button className="text-xl hover:text-purpur w-12 h-12 rounded-full mr-4 border-white text-white">
+                 {heartIcon(font.family)}
+               </button>
+             </span>
+             <button
+               className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out"
+               onClick={() => handleDownload(font.variants[2])}
+             >
+               Download
+             </button>
+           </div>
+         </div>
+       ))}
+     </div>
+   )}
+ </div>
 )}
 
       {selectedLanguage === "Arabic" && (
@@ -521,16 +500,14 @@ const Page: React.FC = () => {
         </div>
       )}
 
-      {!loading && (
-        <div className="flex justify-center mt-8">
-          <button
-            className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out"
-            onClick={handleLoadMoreFonts}
-          >
-            Load More Fonts
-          </button>
-        </div>
-      )}
+{!loading && !searchQuery && (
+            <button
+              onClick={handleLoadMoreFonts}
+              className="py-2 px-4 bg-purple-500 text-white rounded-md mt-8 mx-auto"
+            >
+              Load More
+            </button>
+          )}
     </div>
   );
 };
