@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Nav from "../components/Navbar";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -32,14 +33,15 @@ const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
     />
   </svg>
 );
-
 const Page: React.FC = () => {
+  const { data: session } = useSession();
+  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!name.trim() || !email || !password) {
@@ -47,27 +49,69 @@ const Page: React.FC = () => {
       return;
     }
 
-    // Check if "@" is present in the email
     if (!email.includes("@") || !email.includes(".com")) {
       setError("Invalid email format.");
       return;
     }
 
-    // Check password length
     if (password.length < 10) {
       setError("Password must be at least 10 characters long.");
       return;
     }
 
-    // Check for spaces in the name
     if (name.split(" ").length !== 2) {
       setError("Full name must contain first and last name.");
       return;
     }
 
-    // Here you can add your registration logic
-    console.log("Submitted");
+    try {
+      const resUserExists = await fetch("/api/userExists", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const { user } = await resUserExists.json();
+
+      if (user) {
+        setError("User already exists.");
+        return;
+      }
+
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name, email, password
+        })
+      })
+
+      if (res.ok) {
+        const form = e.target as HTMLFormElement;
+        form.reset();
+        console.log("User registered successfully.");
+        setError("User registered successfully.");
+        window.location.href = "/login"; // Corrected URL format
+      } else {
+        console.error("User registration failed.");
+        // Handle registration failure
+      }
+
+    } catch (error) {
+      console.error("Error during registration:", error);
+      // Handle error
+    }
   };
+
+  // // Redirect to login page if user is logged in
+  // if (session?.user) {
+  //   window.location.href = "/"; 
+  //   return null; // Return null to prevent rendering the signup page
+  // }
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col">

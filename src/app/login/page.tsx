@@ -5,6 +5,7 @@ import Nav from "../components/Navbar";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -37,10 +38,13 @@ const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 
+
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { data: session } = useSession();
+
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
@@ -60,10 +64,18 @@ const LoginPage: React.FC = () => {
 
       // Placeholder for redirection, you can add your redirection logic here
       console.log("Redirect to dashboard"); 
+      window.location.href = "/"; // Corrected URL format
     } catch (error) {
       console.log(error);
     }
   };
+
+  // // Redirect to login page if user is logged in
+  // if (session?.user) {
+  //   window.location.href = "/"; 
+  //   return null; // Return null to prevent rendering the signup page
+  // }
+  
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col">

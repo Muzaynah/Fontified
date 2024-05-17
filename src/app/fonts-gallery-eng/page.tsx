@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -328,17 +329,6 @@ const Page: React.FC = () => {
         </div>
       </div>
 
-      {/* i added fn */}
-      <div className="container mx-auto px-4 pt-8 text-center">
-      <input
-              type="text"
-              placeholder="Search fonts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2 px-4 bg-gray-800 text-white rounded-md"
-            />
-      </div>
-      {/* i added fn */}
 
       <div
         className={`container mx-auto px-4 ${
@@ -420,6 +410,19 @@ const Page: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* i added fn */}
+      <div className="container mx-auto px-4 pt-8 text-center">
+  <input
+    type="text"
+    placeholder="Search fonts..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="w-1/2 py-2 px-4 bg-black border-2 border-purpur text-white rounded-full"
+  />
+</div>
+
+      {/* i added fn */}
 
 {selectedLanguage === "English" && (
    <div className="container mx-auto px-4 py-10">
