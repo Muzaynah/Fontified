@@ -5,11 +5,44 @@ import Image from "next/image";
 import Circle from "./components/Circle";
 import AuthenticationPopup from "./components/AuthenticationPopup";
 
+import { useSession } from "next-auth/react";
+
+const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={30}
+    height={30}
+    color={"#ffffff"}
+    fill={"none"}
+    {...props}
+  >
+    <path
+      d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M14.75 9.5C14.75 11.0188 13.5188 12.25 12 12.25C10.4812 12.25 9.25 11.0188 9.25 9.5C9.25 7.98122 10.4812 6.75 12 6.75C13.5188 6.75 14.75 7.98122 14.75 9.5Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M5.49994 19.0001L6.06034 18.0194C6.95055 16.4616 8.60727 15.5001 10.4016 15.5001H13.5983C15.3926 15.5001 17.0493 16.4616 17.9395 18.0194L18.4999 19.0001"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 export default function Home() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [blurIntensity, setBlurIntensity] = useState(15);
   const [loaded, setLoaded] = useState(false);
   const [hideScrollbar, setHideScrollbar] = useState(true); // State to control scrollbar visibility
+
+  const { data: session } = useSession();
 
   useEffect(() => {
     // When component mounts, set hideScrollbar to false after a delay
@@ -50,14 +83,53 @@ export default function Home() {
         hideScrollbar ? "overflow-y-hidden" : ""
       }`}
     >
-      <Circle circleColor="#380356" radius={250} />
-      <AuthenticationPopup />
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="relative h-full">
           <div className="absolute -top-3/4 left-1/2 transform -translate-x-1/2 bg-gradient-to-b from-transparent to-fuchsia-300 w-full opacity-50% h-full rounded-full blur-[250px]"></div>
         </div>
       </div>
-      <div className="z-10 w-full max-w-5xl items-center justify-center font-mono text-xs lg:flex">
+      <div className="z-10 w-full max-w-5xl items-end justify-end font-sans text-xs lg:flex">
+        <div
+          className="flex mt-24 mb-4 lg:mb-0 lg:mt-2 justify-end items-end flex-col lg:flex-row gap-2 transform-gpu opacity-100 transition-all duration-300 ease-in-out"
+          style={{ transitionDuration: "1s", transitionDelay: "2s" }}
+        >
+          {session && session.user && session.user.name ? (
+            <div className="z-1000 flex-row text-sm flex">
+              <div className="px-3 cursor-default">
+                <UserIcon />
+              </div>
+
+              <Link
+                className="text-white hover:text-purpur"
+                href="UserDashboard"
+                target="_blank"
+              >
+                <p>{session.user.name}</p>
+              </Link>
+            </div>
+          ) : (
+            <div className="z-1000 flex-row text-sm lg:text-lg flex">
+              <div className="px-3 cursor-default">
+                <UserIcon />
+              </div>
+              <Link
+                className="pt-1 lg-pt-0 text-white hover:text-purpur"
+                href="login"
+                target="_blank"
+              >
+                <p>Login</p>
+              </Link>
+              <p className="px-1 pt-1 lg-pt-none">/</p>
+              <Link
+                className="pt-1 lg-pt-0 text-white hover:text-purpur"
+                href="signup"
+                target="_blank"
+              >
+                <p>Signup</p>
+              </Link>
+            </div>
+          )}
+        </div>
         <p className="fixed lg:hidden left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
           <Image
             src="/assets/fontified.png"
@@ -77,39 +149,21 @@ export default function Home() {
           </Link>
         </div>
       </div>
-      <div>
-        <div className="relative lg:mt-28 z-1 hidden lg:block flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-          <div className="relative">
-            <div
-              className="transition-all"
-              style={{ filter: `blur(${blurIntensity}px)` }}
-            >
-              <Image
-                src="/assets/fontified.png"
-                alt="Logo"
-                width={950}
-                height={100}
-                onLoad={() => setImageLoaded(true)}
-              />
-            </div>
+
+      <div className="relative z-1 hidden lg:block flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
+        <div className="relative">
+          <div
+            className="transition-all"
+            style={{ filter: `blur(${blurIntensity}px)` }}
+          >
+            <Image
+              src="/assets/fontified.png"
+              alt="Logo"
+              width={1050}
+              height={100}
+              onLoad={() => setImageLoaded(true)}
+            />
           </div>
-        </div>
-        <div
-          className={`flex mt-24 mb-12 lg:mb-10 lg:mt-2 justify-center flex-col lg:flex-row gap-4 transform-gpu ${
-            loaded ? "opacity-100" : "opacity-0"
-          } transition-all duration-300 ease-in-out`}
-          style={{ transitionDuration: "1s", transitionDelay: "2s" }}
-        >
-          <Link href="loginpage" target="_blank">
-            <button className="text-lg hover:text-black hover:bg-white hover:border-white border-2 w-28 py-1 border-opacity-30 border-purpur rounded-md">
-              <p className="">Login</p>
-            </button>
-          </Link>
-          <Link href="register" target="_blank">
-            <button className="text-lg hover:text-black hover:bg-white hover:border-white border-2 w-28 py-1 border-opacity-30 border-purpur rounded-md">
-              <p className="">Sign Up</p>
-            </button>
-          </Link>
         </div>
       </div>
 
@@ -121,8 +175,8 @@ export default function Home() {
         style={{ transitionDuration: "2s", transitionDelay: "1s" }}
       >
         <Link
-          href="fonts-gallery-eng"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          href="fonts-library"
+          className="group rounded-lg border border-neutral-800 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -133,30 +187,30 @@ export default function Home() {
             </span>
           </h2>
           <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore our vast collection of english and urdu fonts.
+            Explore our English and Urdu fonts.
           </p>
         </Link>
 
         <Link
-          href=""
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          href="handwriting-board"
+          className="group rounded-lg border border-neutral-800 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
-            Handwriting Font{" "}
+            Signature Board{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
           </h2>
           <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Turn your handwriting into a font
+            Handwriting and signature board.
           </p>
         </Link>
 
         <Link
-          href=""
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          href="document-editor"
+          className="group rounded-lg border border-neutral-800 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -167,7 +221,7 @@ export default function Home() {
             </span>
           </h2>
           <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Use your handwriting to type
+            Create, edit, and download documents.
           </p>
         </Link>
       </div>
