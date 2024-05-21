@@ -550,12 +550,15 @@ const Page: React.FC = () => {
       )}
 
       {!loading && !searchQuery && (
-        <button
-          onClick={handleLoadMoreFonts}
-          className="py-2 px-4 bg-purple-500 text-white rounded-md mt-8 mx-auto"
-        >
-          Load More
-        </button>
+       <div className="flex justify-center mt-0 mb-3">
+       <button
+         onClick={handleLoadMoreFonts}
+         className="transition text-purpur duration-200 ease-in-out btn-secondary hover:bg-purpur hover:text-white border-2 border-purpur rounded-full px-4 py-1 text-lg h-10 flex items-center justify-center"
+       >
+         Load More
+       </button>
+     </div>
+     
       )}
     </div>
   );
