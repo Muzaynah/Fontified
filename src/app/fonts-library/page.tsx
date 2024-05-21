@@ -10,12 +10,65 @@ import Link from "next/link";
 import Nav from "../components/Navbar";
 import MoonLoaderComponent from "../components/loader";
 
+const DownloadIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={24}
+    height={24}
+    color={"#e1e1e1"}
+    fill={"none"}
+    {...props}
+  >
+    <path
+      d="M12 14.5L12 4.5M12 14.5C11.2998 14.5 9.99153 12.5057 9.5 12M12 14.5C12.7002 14.5 14.0085 12.5057 14.5 12"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M20 16.5C20 18.982 19.482 19.5 17 19.5H7C4.518 19.5 4 18.982 4 16.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+const DownloadIcon2 = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={24}
+    height={24}
+    color={"#000000"}
+    fill={"none"}
+    {...props}
+  >
+    <path
+      d="M12 14.5L12 4.5M12 14.5C11.2998 14.5 9.99153 12.5057 9.5 12M12 14.5C12.7002 14.5 14.0085 12.5057 14.5 12"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M20 16.5C20 18.982 19.482 19.5 17 19.5H7C4.518 19.5 4 18.982 4 16.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 const filledSVG = (
   <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
     <path fill="none" d="M0 0h256v256H0z"></path>
     <path
       d="M176 32a60 60 0 0 0-48 24A60 60 0 0 0 20 92c0 71.9 99.9 128.6 104.1 131a7.8 7.8 0 0 0 3.9 1 7.6 7.6 0 0 0 3.9-1 314.3 314.3 0 0 0 51.5-37.6C218.3 154 236 122.6 236 92a60 60 0 0 0-60-60Z"
-      fill="#7c54c7"
+      fill="#ffffff"
     ></path>
   </svg>
 );
@@ -26,7 +79,7 @@ const unfilledSVG = (
     <path
       d="M128 216S28 160 28 92a52 52 0 0 1 100-20h0a52 52 0 0 1 100 20c0 68-100 124-100 124Z"
       fill="none"
-      stroke="#7c54c7"
+      stroke="#ffffff"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="16"
@@ -64,6 +117,7 @@ const Page: React.FC = () => {
   const [favoriteFonts, setFavoriteFonts] = useState<{
     [key: string]: boolean;
   }>({});
+  const [hover, setHover] = useState(false);
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -342,9 +396,18 @@ const Page: React.FC = () => {
   const heartIcon = (fontFamily: string) =>
     favoriteFonts[fontFamily] ? filledSVG : unfilledSVG;
 
+  const [hoveredButtonIndex, setHoveredButtonIndex] = useState<number | null>(
+    null
+  );
+
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className="bg-black text-white min-h-screen pb-12">
       {/*<Circle circleColor="#380356" radius={250} />*/}
+      <div className="absolute z-0 top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="fixed top-0 left-0 w-full h-full">
+          <div className="absolute z-0 -top-3/4 left-1/2 transform -translate-x-1/2 bg-gradient-to-b from-transparent to-fuchsia-400 w-full opacity-40% h-full rounded-full blur-[250px]"></div>
+        </div>
+      </div>
 
       <Nav />
       {showAuthenticationPopup && <AuthenticationPopup />}
@@ -459,7 +522,7 @@ const Page: React.FC = () => {
       )}
 
       {selectedLanguage === "English" && (
-        <div className="container mx-auto px-6 py-10">
+        <div className="container mx-auto px-6 pt-10">
           {loading ? (
             <div>
               <MoonLoaderComponent />
@@ -472,11 +535,11 @@ const Page: React.FC = () => {
               ).map((font, index) => (
                 <div
                   key={index}
-                  className="bg-transparent border-purpur hover:border-white border-2 p-6 rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-white transition duration-200 ease-in-out relative group"
+                  className="bg-transparent border-purpur hover:border-purpur border-2 p-6 rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group"
                 >
                   <div onClick={() => handleCardClick(font)}>
                     <h1
-                      className="text-2xl text-purpur mb-4"
+                      className="text-2xl text-purpur group-hover:text-black mb-4"
                       style={{ fontFamily: `${font.family}, sans-serif` }}
                     >
                       {font.family}
@@ -497,12 +560,17 @@ const Page: React.FC = () => {
                       </button>
                     </span>
                     <button
-                      className="btn btn-secondary text-purpur bg-black border-2 border-purpur rounded-full px-6 h-12 transition duration-200 ease-in-out
-            group-hover:bg-white group-hover:text-purpur group-hover:border-black
-            hover:bg-white hover:text-black"
+                      className="btn btn-secondary hover:bg-white border-2 border-white rounded-full px-3 h-12 transition duration-200 ease-in-out"
                       onClick={() => handleDownload(font.variants[2])}
+                      onMouseEnter={() => setHoveredButtonIndex(index)}
+                      onMouseLeave={() => setHoveredButtonIndex(null)}
                     >
-                      Download
+                      {/* Conditionally render the icons based on hover state */}
+                      {hoveredButtonIndex === index ? (
+                        <DownloadIcon2 />
+                      ) : (
+                        <DownloadIcon />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -530,13 +598,22 @@ const Page: React.FC = () => {
                   className="text-4xl mb-8"
                   style={{ fontFamily: `${font.family}, sans-serif` }}
                 >
-                  ٹھنڈ میں ایک قحط زدہ گاؤں سے گذرتے وقت ایک چڑچڑےباأثر و فارغ
-                  شخص کو بعض جل پری نما اژدہے نظر آئے۔
+                  خوابوں کی دنیا میں پرندے اڑتے، درخت لہراتے، اور پہاڑ گاتے ہیں۔
                 </h2>
               </div>
               <div className="flex justify-between mt-4">
-                <button className="btn btn-secondary text-purpur bg-black hover:text-black border-2 border-purpur hover:bg-white rounded-full px-6 h-14 font-bold transition duration-200 ease-in-out">
-                  Download
+                <button
+                  className="btn btn-secondary hover:bg-white border-2 border-white rounded-full px-3 h-12 transition duration-200 ease-in-out"
+                  onMouseEnter={() => setHoveredButtonIndex(index)}
+                  onMouseLeave={() => setHoveredButtonIndex(null)}
+                  onClick={() => handleDownload(font.variants[2])}
+                >
+                  {/* Conditionally render the icons based on hover state */}
+                  {hoveredButtonIndex === index ? (
+                    <DownloadIcon2 />
+                  ) : (
+                    <DownloadIcon />
+                  )}
                 </button>
                 <span onClick={() => toggleFavorite(font.family)}>
                   <button className="text-xl hover:text-purpur w-12 h-12 rounded-full mr-4 border-white text-white">
@@ -550,15 +627,14 @@ const Page: React.FC = () => {
       )}
 
       {!loading && !searchQuery && (
-       <div className="flex justify-center mt-0 mb-3">
-       <button
-         onClick={handleLoadMoreFonts}
-         className="transition text-purpur duration-200 ease-in-out btn-secondary hover:bg-purpur hover:text-white border-2 border-purpur rounded-full px-4 py-1 text-lg h-10 flex items-center justify-center"
-       >
-         Load More
-       </button>
-     </div>
-     
+        <div className="flex justify-center mt-8 mb-4">
+          <button
+            onClick={handleLoadMoreFonts}
+            className="transition text-purpur duration-200 ease-in-out btn-secondary hover:bg-purpur hover:text-white border-2 border-purpur rounded-full px-4 py-1 text-lg h-10 flex items-center justify-center"
+          >
+            Load More
+          </button>
+        </div>
       )}
     </div>
   );

@@ -30,8 +30,9 @@ const DocumentEditorPage = () => {
         </div>
       </div>
       <Nav />
-      <div className="container mx-auto px-4 pt-20 pb-10 text-center">
-        <h1 className="text-4xl font-bold">Create, Edit and Save Documents</h1>
+      <div className="container mx-auto px-4 pt-16 pb-4 text-center">
+        <h1 className="text-4xl font-bold mb-4">Document Editor</h1>
+        <div className="text-xl">Create, Edit and Save Documents</div>
       </div>
 
       <div className="m-12 flex flex-col">

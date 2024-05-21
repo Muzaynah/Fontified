@@ -102,7 +102,6 @@ export default function Home() {
               <Link
                 className="text-white hover:text-purpur"
                 href="UserDashboard"
-                target="_blank"
               >
                 <p>{session.user.name}</p>
               </Link>
@@ -115,7 +114,6 @@ export default function Home() {
               <Link
                 className="pt-1 lg-pt-0 text-white hover:text-purpur"
                 href="login"
-                target="_blank"
               >
                 <p>Login</p>
               </Link>
@@ -123,7 +121,6 @@ export default function Home() {
               <Link
                 className="pt-1 lg-pt-0 text-white hover:text-purpur"
                 href="signup"
-                target="_blank"
               >
                 <p>Signup</p>
               </Link>
@@ -139,14 +136,9 @@ export default function Home() {
           />
         </p>
         <div className="fixed lg:hidden bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <Link
-            href="fonts"
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <div className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0">
             © 2024 Fontified | All Rights Reserved
-          </Link>
+          </div>
         </div>
       </div>
 
@@ -177,7 +169,6 @@ export default function Home() {
         <Link
           href="fonts-library"
           className="group rounded-lg border border-neutral-800 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
@@ -194,7 +185,6 @@ export default function Home() {
         <Link
           href="handwriting-board"
           className="group rounded-lg border border-neutral-800 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">
@@ -211,7 +201,6 @@ export default function Home() {
         <Link
           href="document-editor"
           className="group rounded-lg border border-neutral-800 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className="mb-3 text-2xl font-semibold">

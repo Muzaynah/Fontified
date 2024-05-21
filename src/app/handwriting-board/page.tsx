@@ -212,86 +212,89 @@ const DrawingBoard: React.FC = () => {
 
   return (
     <div className="bg-black text-white  min-h-screen">
+      {/*<Circle circleColor="#380356" radius={250} />*/}
+      <div className="absolute z-0 top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="fixed top-0 left-0 w-full h-full">
+          <div className="absolute z-0 -top-3/4 left-1/2 transform -translate-x-1/2 bg-gradient-to-b from-transparent to-fuchsia-400 w-full opacity-20% h-full rounded-full blur-[350px]"></div>
+        </div>
+      </div>
       <Nav />
-      <div className="flex flex-col items-center justify-center py-12 px-8 lg:px-4">
-        <h1 className="text-4xl font-bold mb-12">Custom Drawing Board</h1>
-        <div className="mb-6">
-  <h3 className="text-2xl font-semibold mb-4">Key Features</h3>
-  <ul className="list-disc list-inside text-lg">
-    <li>Draw your signatures with transparent backgrounds.</li>
-    <li>Use PNG and SVG formats in your official documents.</li>
-  </ul>
-</div>
+      <div className="flex flex-col items-center justify-center pb-10 pt-6 px-8 lg:px-4">
+        <h1 className="text-4xl font-bold mb-4">Handwriting Board</h1>
+        <div className="text-xl mb-10">
+          Create signatures with transparent backgrounds using PNG and SVG
+          formats.
+        </div>
 
-
-        <div className="w-full lg:max-w-screen-lg">
-          <ReactSketchCanvas
-            ref={canvasRef}
-            strokeWidth={5}
-            strokeColor={brushColor}
-            canvasColor="transparent"
-            exportWithBackgroundImage={false}
-            height="500px"
-            width="100%"
-          />
-          <div className="flex flex-wrap justify-center space-x-2 mt-4">
-  <button
-    className={`border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto ${
-      selectedTool === "pen" ? "bg-purpur" : ""
-    }`}
-    onClick={switchToPenMode}
-  >
-    <PenIcon />
-  </button>
-  <button
-    className={`border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto ${
-      selectedTool === "eraser" ? "bg-purpur" : ""
-    }`}
-    onClick={switchToEraserMode}
-  >
-    <EraserIcon />
-  </button>
-  <button
-    className="border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto"
-    onClick={undo}
-  >
-    <UndoIcon />
-  </button>
-  <button
-    className="border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto"
-    onClick={redo}
-  >
-    <RedoIcon />
-  </button>
-  <div className="flex items-center border-2 border-purpur rounded-full px-2 py-1 lg:w-auto">
-    <ColorPickerIcon />
-    <div className="relative ml-2">
-      <input
-        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-        type="color"
-        value={brushColor}
-        onChange={(e) => handleColorChange(e.target.value)}
-      />
-      <button
-        className="h-6 w-6 rounded-full"
-        style={{ backgroundColor: brushColor }}
-      ></button>
-    </div>
-  </div>
-  <button
-    className="border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto"
-    onClick={handleExportSVG}
-  >
-    Export SVG
-  </button>
-  <button
-    className="border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto"
-    onClick={handleExportPNG}
-  >
-    Export PNG
-  </button>
-</div>
-
+        <div className="w-full lg:max-w-screen-md">
+          <div className="bg-white">
+            <ReactSketchCanvas
+              ref={canvasRef}
+              strokeWidth={5}
+              strokeColor={brushColor}
+              canvasColor="transparent"
+              exportWithBackgroundImage={false}
+              height="400px"
+              width="100%"
+            />
+          </div>
+          <div className="flex flex-wrap justify-center space-x-2 mt-6">
+            <button
+              className={`border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto ${
+                selectedTool === "pen" ? "bg-purpur" : ""
+              }`}
+              onClick={switchToPenMode}
+            >
+              <PenIcon />
+            </button>
+            <button
+              className={`border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto ${
+                selectedTool === "eraser" ? "bg-purpur" : ""
+              }`}
+              onClick={switchToEraserMode}
+            >
+              <EraserIcon />
+            </button>
+            <button
+              className="border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto"
+              onClick={undo}
+            >
+              <UndoIcon />
+            </button>
+            <button
+              className="border-2 border-purpur hover:bg-purpur text-white px-2 py-1 rounded-full lg:w-auto"
+              onClick={redo}
+            >
+              <RedoIcon />
+            </button>
+            <div className="flex items-center border-2 border-purpur rounded-full px-2 py-1 lg:w-auto">
+              <ColorPickerIcon />
+              <div className="relative ml-2">
+                <input
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  type="color"
+                  value={brushColor}
+                  onChange={(e) => handleColorChange(e.target.value)}
+                />
+                <button
+                  className="mt-1 h-6 w-6 rounded-full border-2"
+                  style={{ backgroundColor: brushColor }}
+                ></button>
+              </div>
+            </div>
+            <button
+              className="border-2 border-purpur hover:bg-purpur text-white px-4 py-1 rounded-full lg:w-auto"
+              onClick={handleExportSVG}
+            >
+              Export SVG
+            </button>
+            <button
+              className="border-2 border-purpur hover:bg-purpur text-white px-4 py-1 rounded-full lg:w-auto"
+              onClick={handleExportPNG}
+            >
+              Export PNG
+            </button>
+          </div>
         </div>
       </div>
     </div>
