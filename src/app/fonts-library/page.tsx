@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+
 import ProfileImg from "../components/profileimage";
 import AuthenticationPopup from "../components/AuthenticationPopup";
 import Circle from "../components/Circle";
@@ -406,7 +407,7 @@ const Page: React.FC = () => {
       {/*<Circle circleColor="#380356" radius={250} />*/}
       <div className="absolute z-0 top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="fixed top-0 left-0 w-full h-full">
-          <div className="absolute z-0 -top-3/4 left-1/2 transform -translate-x-1/2 bg-gradient-to-b from-transparent to-fuchsia-400 w-full opacity-40% h-full rounded-full blur-[250px]"></div>
+          <div className="absolute z-0 -top-3/4 left-1/2 transform -translate-x-1/2 bg-gradient-to-b from-transparent to-fuchsia-300 w-full opacity-40% h-full rounded-full blur-[250px]"></div>
         </div>
       </div>
 
@@ -536,7 +537,7 @@ const Page: React.FC = () => {
               ).map((font, index) => (
                 <div
                   key={index}
-                  className="bg-transparent border-purpur hover:border-purpur border-2 p-6 rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group"
+                  className="bg-neutral-900/35 cursor-pointer border-purpur/30 hover:border-purpur border-2 p-6 rounded-2xl shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur/80 transition duration-200 ease-in-out relative group"
                 >
                   <div onClick={() => handleCardClick(font)}>
                     <h1
@@ -586,7 +587,7 @@ const Page: React.FC = () => {
           {fontsArabic.map((font, index) => (
             <div
               key={index}
-              className="bg-transparent border-purpur border-2 p-8 text-right rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur transition duration-200 ease-in-out relative group"
+              className="bg-neutral-900/35 border-purpur border-2 p-8 text-right rounded-lg shadow-md hover:text-black flex flex-col justify-between hover:bg-purpur/80 transition duration-200 ease-in-out relative group"
             >
               <div>
                 <h1
@@ -628,7 +629,7 @@ const Page: React.FC = () => {
       )}
 
       {!loading && !searchQuery && (
-        <div className="flex justify-center mt-8 mb-4">
+        <div className="flex justify-center mt-12 mb-4">
           <button
             onClick={handleLoadMoreFonts}
             className="transition text-purpur duration-200 ease-in-out btn-secondary hover:bg-purpur hover:text-white border-2 border-purpur rounded-full px-4 py-1 text-lg h-10 flex items-center justify-center"

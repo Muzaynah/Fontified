@@ -83,6 +83,7 @@ export default function Home() {
         hideScrollbar ? "overflow-y-hidden" : ""
       }`}
     >
+      <Circle circleColor="#380356" radius={250} />
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="relative h-full">
           <div className="absolute -top-3/4 left-1/2 transform -translate-x-1/2 bg-gradient-to-b from-transparent to-fuchsia-300 w-full opacity-50% h-full rounded-full blur-[250px]"></div>
@@ -90,17 +91,19 @@ export default function Home() {
       </div>
       <div className="z-10 w-full max-w-5xl items-end justify-end font-sans text-xs lg:flex">
         <div
-          className="flex mt-24 mb-4 lg:mb-0 lg:mt-2 justify-end items-end flex-col lg:flex-row gap-2 transform-gpu opacity-100 transition-all duration-300 ease-in-out"
-          style={{ transitionDuration: "1s", transitionDelay: "2s" }}
+          className={`flex mt-16 mb-4 lg:mb-0 lg:mt-2 justify-end items-end flex-col lg:flex-row gap-2 transform-gpu ${
+            loaded ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+          } transition-all duration-200 ease-in-out`}
+          style={{ transitionDuration: "2s", transitionDelay: "1s" }}
         >
           {session && session.user && session.user.name ? (
             <div className="z-1000 flex-row text-sm flex">
-              <div className="px-3 cursor-default">
+              <div className="px-3 lg:pt-1 cursor-default">
                 <UserIcon />
               </div>
 
               <Link
-                className="text-white hover:text-purpur"
+                className="text-white text-sm lg:text-lg pt-1 hover:text-purpur"
                 href="UserDashboard"
               >
                 <p>{session.user.name}</p>
@@ -108,7 +111,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="z-1000 flex-row text-sm lg:text-lg flex">
-              <div className="px-3 cursor-default">
+              <div className="px-3 lg:pt-1 cursor-default">
                 <UserIcon />
               </div>
               <Link
@@ -117,11 +120,8 @@ export default function Home() {
               >
                 <p>Login</p>
               </Link>
-              <p className="px-1 pt-1 lg-pt-none">/</p>
-              <Link
-                className="pt-1 lg-pt-0 text-white hover:text-purpur"
-                href="signup"
-              >
+              <p className="px-1 pt-1">/</p>
+              <Link className="pt-1 text-white hover:text-purpur" href="signup">
                 <p>Signup</p>
               </Link>
             </div>

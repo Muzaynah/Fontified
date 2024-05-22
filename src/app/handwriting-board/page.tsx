@@ -227,7 +227,7 @@ const DrawingBoard: React.FC = () => {
         </div>
 
         <div className="w-full lg:max-w-screen-md">
-          <div className="bg-white">
+          <div className=" bg-white">
             <ReactSketchCanvas
               ref={canvasRef}
               strokeWidth={5}
