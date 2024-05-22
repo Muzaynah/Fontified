@@ -1,29 +1,30 @@
 import React, { useState } from "react";
 
-const AuthenticationPopup: React.FC = () => {
+interface AuthenticationPopupProps {
+  onClose: () => void;
+}
+
+const AuthenticationPopup: React.FC<AuthenticationPopupProps> = ({ onClose }) => {
   const [showPopup, setShowPopup] = useState(true);
 
   const handleClose = () => {
     setShowPopup(false);
+    onClose();
   };
 
   const handleCardClick = async () => {
     try {
-      // Redirect to the login page
-      window.location.href = "/login"; // Corrected URL format
+      window.location.href = "/login";
     } catch (error) {
       console.error("Error handling card click:", error);
-      // Handle error here
     }
   };
 
   const handleCardClick1 = async () => {
     try {
-      // Redirect to the signup page
-      window.location.href = "/signup"; // Corrected URL format
+      window.location.href = "/signup";
     } catch (error) {
       console.error("Error handling card click:", error);
-      // Handle error here
     }
   };
 
@@ -59,7 +60,6 @@ const AuthenticationPopup: React.FC = () => {
                   continue.
                 </h1>
               </div>
-
               <div className="w-full flex flex-col gap-3 flex justify-between items-center text-purpur rounded-md">
                 <button
                   className="border-purpur hover:border-white text-purpur hover:text-white w-full bg-transparent border rounded-full px-4 py-1"
@@ -69,7 +69,7 @@ const AuthenticationPopup: React.FC = () => {
                 </button>
                 <button
                   className="border-purpur hover:border-white text-purpur text-center hover:text-white w-full bg-transparent border rounded-full px-4 py-1"
-                  onClick={handleCardClick} // Corrected onClick handler
+                  onClick={handleCardClick}
                 >
                   Login
                 </button>

@@ -118,6 +118,7 @@ const Page: React.FC = () => {
     [key: string]: boolean;
   }>({});
   const [hover, setHover] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -355,7 +356,7 @@ const Page: React.FC = () => {
 
   const toggleFavorite = async (fontFamily: string) => {
     if (!session || !session.user) {
-      alert("Please sign in to add fonts to favorites.");
+      setShowPopup(true);
       return;
     }
 
@@ -410,7 +411,7 @@ const Page: React.FC = () => {
       </div>
 
       <Nav />
-      {showAuthenticationPopup && <AuthenticationPopup />}
+
 
       {/*slider*/}
       <div className="container mx-auto px-4 pt-16  text-center">
@@ -636,6 +637,7 @@ const Page: React.FC = () => {
           </button>
         </div>
       )}
+      {showPopup && <AuthenticationPopup onClose={() => setShowPopup(false)} />}
     </div>
   );
 };

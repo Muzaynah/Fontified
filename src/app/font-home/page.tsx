@@ -6,7 +6,7 @@ import Glyphs from "../components/Glyphs";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-
+import AuthenticationPopup from "../components/AuthenticationPopup";
 const ResetIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     height="21"
@@ -66,7 +66,7 @@ const Page: React.FC = () => {
   const [fonts, setFonts] = useState<Font[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const searchParams = useSearchParams();
-
+  const [showPopup, setShowPopup] = useState(false);
   const search = searchParams.get("family");
   // console.log(search)
 
@@ -96,6 +96,7 @@ const Page: React.FC = () => {
 
   const toggleFavorite = async () => {
     if (!session || !session.user || !fontUrls?.fontFamily) {
+      setShowPopup(true);
       return;
     }
     try {
@@ -209,65 +210,8 @@ const Page: React.FC = () => {
     anchor.click();
   }
 
-  const removeFavorite = (index: number, fontFamily: string) => {
-    if (!session?.user?.email) {
-      console.error("User email not available");
-      return;
-    }
-
-    const updatedFavorites = [...favorites];
-    updatedFavorites.splice(index, 1);
-    setFavorites(updatedFavorites);
-
-    const encodedEmail = encodeURIComponent(session.user.email);
-    const encodedFontFamily = encodeURIComponent(fontFamily);
-
-    axios
-      .delete(
-        `http://localhost:3001/api/user-favorites/${encodedEmail}/${encodedFontFamily}`
-      )
-      .then((response) => {
-        console.log("Favorite deleted successfully:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error deleting favorite:", error);
-        // Add specific error handling based on error response
-      });
-  };
-
-  const handleAddToFavorites = async (fontFamily: string) => {
-    if (!session || !session.user) {
-      // If user is not logged in, notify them to sign in
-      alert("Please sign in to add fonts to favorites.");
-      return;
-    }
-
-    try {
-      // Fetch user's email from session
-      const userEmail = session.user.email;
-
-      // Call backend API to add font to user-favs collection
-      const response = await axios.post(
-        "http://localhost:3001/api/user-favorites",
-        {
-          email: userEmail,
-          fontFamily: fontFamily,
-        }
-      );
-
-      // Handle success response
-      console.log("Font added to favorites:", response.data);
-      // Notify the user that the font has been added to favorites
-      alert("Font added to favorites.");
-    } catch (error) {
-      // Handle error
-      console.error("Error adding font to favorites:", error);
-      // Notify the user about the error
-      alert(
-        "An error occurred while adding the font to favorites. Please try again later."
-      );
-    }
-  };
+ 
+  
   const MemoizedGlyphs = React.memo(() => <Glyphs fontUrls={fontUrls} />);
   const MemoizedEditor = React.memo(() => <Editor />);
 
@@ -405,6 +349,7 @@ const Page: React.FC = () => {
       >
         <Editor />
       </div>
+      {showPopup && <AuthenticationPopup onClose={() => setShowPopup(false)} />}
     </div>
   );
 };
