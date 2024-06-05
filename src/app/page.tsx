@@ -83,7 +83,6 @@ export default function Home() {
         hideScrollbar ? "overflow-y-hidden" : ""
       }`}
     >
-      <Circle circleColor="#380356" radius={250} />
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="relative h-full">
           <div className="absolute -top-3/4 left-1/2 transform -translate-x-1/2 bg-gradient-to-b from-transparent to-fuchsia-300 w-full opacity-50% h-full rounded-full blur-[250px]"></div>
