@@ -2,7 +2,14 @@
 
 import React, { useState } from "react";
 
-const Glyphs: React.FC = ({ fontUrls }) => {
+// Define the type for the props
+interface GlyphsProps {
+  fontUrls: {
+    fontFamily: string;
+  };
+}
+
+const Glyphs: React.FC<GlyphsProps> = ({ fontUrls }) => {
   const glyphs = [
     ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)), // Alphabet (A-Z)
     ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i)), // Alphabet (a-z)

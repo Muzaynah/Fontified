@@ -1,11 +1,51 @@
-// Nav.tsx
 "use client";
+
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// Define the props for NavItem, including children
+interface NavItemProps {
+  path: string;
+  currentPath: string;
+  isLoginSignup?: boolean;
+  children: React.ReactNode; // Add children to the interface
+}
+
+const NavItem: React.FC<NavItemProps> = ({
+  path,
+  currentPath,
+  children,
+  isLoginSignup = false,
+}) => {
+  const isActive = isLoginSignup
+    ? currentPath === "/login" || currentPath === "/signup"
+    : path === currentPath;
+  const activeClassName = isActive
+    ? "bg-white text-black"
+    : "hover:bg-white hover:text-black";
+
+  return (
+    <li
+      className={`text-sm flex-row flex px-4 py-2 rounded-full border-2 ${activeClassName}`}
+    >
+      <Link href={path}>{children}</Link>
+      {isLoginSignup && (
+        <>
+          {" "}
+          /{" "}
+          <Link href="/signup" className="hover:underline">
+            Signup
+          </Link>
+        </>
+      )}
+    </li>
+  );
+};
+
+// Define the props for Nav (even if empty, to keep the structure consistent)
 interface NavProps {}
 
 const Nav: React.FC<NavProps> = () => {
@@ -146,43 +186,6 @@ const Nav: React.FC<NavProps> = () => {
         )}
       </div>
     </nav>
-  );
-};
-
-interface NavItemProps {
-  path: string;
-  currentPath: string;
-  isLoginSignup?: boolean;
-}
-
-const NavItem: React.FC<NavItemProps> = ({
-  path,
-  currentPath,
-  children,
-  isLoginSignup = false,
-}) => {
-  const isActive = isLoginSignup
-    ? currentPath === "/login" || currentPath === "/signup"
-    : path === currentPath;
-  const activeClassName = isActive
-    ? "bg-white text-black"
-    : "hover:bg-white hover:text-black";
-
-  return (
-    <li
-      className={`text-sm flex-row flex px-4 py-2 rounded-full border-2 ${activeClassName}`}
-    >
-      <Link href={path}>{children}</Link>
-      {isLoginSignup && (
-        <>
-          {" "}
-          /{" "}
-          <Link href="/signup" className="hover:underline">
-            Signup
-          </Link>
-        </>
-      )}
-    </li>
   );
 };
 

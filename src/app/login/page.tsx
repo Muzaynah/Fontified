@@ -37,22 +37,27 @@ const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
-
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const { data: session } = useSession();
 
-
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
     try {
-      const res = await signIn('credentials', {
-        email, password, redirect: false,
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
+
+      if (!res) {
+        // Handle case where res is undefined
+        setError("An error occurred while logging in.");
+        return;
+      }
 
       if (res.error) {
         setError("Invalid Credentials");
@@ -63,8 +68,8 @@ const LoginPage: React.FC = () => {
       setError("Logged in successfully!");
 
       // Placeholder for redirection, you can add your redirection logic here
-      console.log("Redirect to dashboard"); 
-      window.location.href = "/"; // Corrected URL format
+      console.log("Redirect to dashboard");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
     }
@@ -72,10 +77,9 @@ const LoginPage: React.FC = () => {
 
   // // Redirect to login page if user is logged in
   // if (session?.user) {
-  //   window.location.href = "/"; 
+  //   window.location.href = "/";
   //   return null; // Return null to prevent rendering the signup page
   // }
-  
 
   return (
     <div className="bg-black text-white min-h-screen flex flex-col">
@@ -96,18 +100,21 @@ const LoginPage: React.FC = () => {
             </div>
 
             <div className="w-full">
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3 flex justify-between items-center text-purpur rounded-md px-5">
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-3 flex justify-between items-center text-purpur rounded-md px-5"
+              >
                 <input
                   className="text-purpur w-full bg-transparent border rounded-full px-4 py-1"
                   type="text"
                   placeholder="Email"
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                   className="text-purpur w-full bg-transparent border rounded-full px-4 py-1"
                   type="password"
                   placeholder="Password"
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   className="hover:text-black text-sm sm:text-lg hover:bg-white bg-purpur border-2 hover:border-white border-purpur text-black mt-8 py-1 px-6 rounded-full"
@@ -115,18 +122,14 @@ const LoginPage: React.FC = () => {
                 >
                   Login
                 </button>
-                {error && (
-                <div className="text-white mt-2">{error}</div>
-              )}
+                {error && <div className="text-white mt-2">{error}</div>}
               </form>
-              
             </div>
-
           </div>
           <div className="flex text-xs sm:text-sm items-center mt-6 flex-col gap-2">
-            <p>Don't have an account?</p>
+            <p>Don&apos;t have an account?</p>
             <Link
-            href = "signup"
+              href="signup"
               className="z-1000 hover:text-black hover:bg-purpur border-purpur border text-purpur py-1 px-4  rounded-full"
               onClick={() => console.log("Redirect to signup page")} // Placeholder for redirecting to signup page
             >

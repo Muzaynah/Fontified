@@ -210,10 +210,8 @@ const Page: React.FC = () => {
     anchor.click();
   }
 
- 
-  
-  const MemoizedGlyphs = React.memo(() => <Glyphs fontUrls={fontUrls} />);
-  const MemoizedEditor = React.memo(() => <Editor />);
+  // const MemoizedGlyphs = React.memo(() => <Glyphs fontUrls={fontUrls} />);
+  // const MemoizedEditor = React.memo(() => <Editor />);
 
   return (
     <div id="top" className=" bg-black text-white min-h-screen pb-60">
@@ -295,9 +293,9 @@ const Page: React.FC = () => {
             <p className="text-md text-right">
               This is a generic paragraph meant to illustrate how the font will
               appear in regular text. Choosing the right typeface is crucial for
-              conveying your message effectively. Whether it's for a website,
-              brochure, or document, the font plays a significant role in
-              readability and visual appeal.
+              conveying your message effectively. Whether it&apos;s for a
+              website, brochure, or document, the font plays a significant role
+              in readability and visual appeal.
             </p>
           </div>
         </div>
